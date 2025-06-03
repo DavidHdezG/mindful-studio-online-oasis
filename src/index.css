@@ -85,6 +85,10 @@
   body {
     @apply bg-gradient-to-br from-cream-50 to-sage-50 text-foreground font-inter;
   }
+
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 @layer utilities {
@@ -94,5 +98,9 @@
   
   .glass-effect {
     @apply bg-white/70 backdrop-blur-lg border border-white/20;
+  }
+
+  .parallax-element {
+    will-change: transform;
   }
 }

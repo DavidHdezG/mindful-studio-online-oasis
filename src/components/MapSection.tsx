@@ -1,13 +1,15 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Map from '@/components/Map';
+import { useScrollAnimation, useParallax } from '@/hooks/useScrollAnimation';
 
 const MapSection = () => {
   const [mapboxToken, setMapboxToken] = useState('');
   const [showMap, setShowMap] = useState(false);
+  const { ref: sectionRef, isVisible } = useScrollAnimation(0.2);
+  const parallaxOffset = useParallax(0.1);
 
   const handleTokenSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,9 +19,25 @@ const MapSection = () => {
   };
 
   return (
-    <section id="location" className="py-20 px-4">
-      <div className="container mx-auto max-w-6xl">
-        <div className="text-center mb-16">
+    <section id="location" className="py-20 px-4 relative overflow-hidden">
+      {/* Background Parallax Element */}
+      <div 
+        className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none"
+        style={{
+          transform: `translateY(${parallaxOffset}px)`,
+          backgroundImage: "url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      />
+      
+      <div className="container mx-auto max-w-6xl relative z-10">
+        <div 
+          ref={sectionRef}
+          className={`text-center mb-16 transition-all duration-1000 ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          }`}
+        >
           <h2 className="font-playfair text-4xl md:text-5xl font-bold gradient-text mb-6">
             Nuestra Ubicación
           </h2>
@@ -30,7 +48,11 @@ const MapSection = () => {
 
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           {/* Map */}
-          <div className="order-2 lg:order-1">
+          <div 
+            className={`order-2 lg:order-1 transition-all duration-1000 delay-300 ${
+              isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'
+            }`}
+          >
             <Card className="glass-effect border-sage-200/50 overflow-hidden">
               <CardHeader>
                 <CardTitle className="font-playfair text-2xl gradient-text">
@@ -77,7 +99,11 @@ const MapSection = () => {
           </div>
 
           {/* Location Details */}
-          <div className="order-1 lg:order-2 space-y-8">
+          <div 
+            className={`order-1 lg:order-2 space-y-8 transition-all duration-1000 delay-500 ${
+              isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'
+            }`}
+          >
             <Card className="glass-effect border-sage-200/50">
               <CardHeader>
                 <CardTitle className="font-playfair text-2xl gradient-text">

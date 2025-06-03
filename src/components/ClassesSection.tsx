@@ -2,8 +2,12 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { useScrollAnimation, useParallax } from '@/hooks/useScrollAnimation';
 
 const ClassesSection = () => {
+  const { ref: sectionRef, isVisible } = useScrollAnimation(0.2);
+  const parallaxOffset = useParallax(0.3);
+
   const classes = [
     {
       name: 'Hatha Yoga',
@@ -35,9 +39,25 @@ const ClassesSection = () => {
   ];
 
   return (
-    <section id="classes" className="py-20 px-4">
-      <div className="container mx-auto max-w-6xl">
-        <div className="text-center mb-16">
+    <section id="classes" className="py-20 px-4 relative overflow-hidden">
+      {/* Background Parallax Element */}
+      <div 
+        className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none"
+        style={{
+          transform: `translateY(${parallaxOffset}px)`,
+          backgroundImage: "url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      />
+      
+      <div className="container mx-auto max-w-6xl relative z-10">
+        <div 
+          ref={sectionRef}
+          className={`text-center mb-16 transition-all duration-1000 ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          }`}
+        >
           <h2 className="font-playfair text-4xl md:text-5xl font-bold gradient-text mb-6">
             Nuestras Clases
           </h2>
@@ -48,54 +68,66 @@ const ClassesSection = () => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {classes.map((yogaClass, index) => (
-            <Card 
-              key={index} 
-              className="group hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 glass-effect border-sage-200/50 overflow-hidden"
-            >
-              <div className="relative h-48 overflow-hidden">
-                <img 
-                  src={yogaClass.image} 
-                  alt={yogaClass.name}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-sage-900/50 to-transparent"></div>
-                <Badge className="absolute top-4 right-4 bg-sage-600 text-white">
-                  {yogaClass.level}
-                </Badge>
-              </div>
-              
-              <CardHeader>
-                <CardTitle className="font-playfair text-2xl text-sage-800 group-hover:gradient-text transition-all duration-300">
-                  {yogaClass.name}
-                </CardTitle>
-                <CardDescription className="text-sage-600 leading-relaxed">
-                  {yogaClass.description}
-                </CardDescription>
-              </CardHeader>
-              
-              <CardContent className="space-y-4">
-                <div className="flex flex-wrap gap-2">
-                  {yogaClass.benefits.map((benefit, idx) => (
-                    <Badge key={idx} variant="secondary" className="bg-sage-100 text-sage-700 hover:bg-sage-200 transition-colors">
-                      {benefit}
+          {classes.map((yogaClass, index) => {
+            const { ref: cardRef, isVisible: cardVisible } = useScrollAnimation(0.3);
+            
+            return (
+              <div
+                key={index}
+                ref={cardRef}
+                className={`transition-all duration-700 ${
+                  cardVisible 
+                    ? 'opacity-100 translate-y-0' 
+                    : 'opacity-0 translate-y-10'
+                }`}
+                style={{ transitionDelay: `${index * 200}ms` }}
+              >
+                <Card className="group hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 glass-effect border-sage-200/50 overflow-hidden">
+                  <div className="relative h-48 overflow-hidden">
+                    <img 
+                      src={yogaClass.image} 
+                      alt={yogaClass.name}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-sage-900/50 to-transparent"></div>
+                    <Badge className="absolute top-4 right-4 bg-sage-600 text-white">
+                      {yogaClass.level}
                     </Badge>
-                  ))}
-                </div>
-                
-                <div className="space-y-2 text-sm text-sage-600">
-                  <div className="flex justify-between">
-                    <span className="font-medium">Horario:</span>
-                    <span>{yogaClass.schedule}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Duración:</span>
-                    <span>{yogaClass.duration}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  
+                  <CardHeader>
+                    <CardTitle className="font-playfair text-2xl text-sage-800 group-hover:gradient-text transition-all duration-300">
+                      {yogaClass.name}
+                    </CardTitle>
+                    <CardDescription className="text-sage-600 leading-relaxed">
+                      {yogaClass.description}
+                    </CardDescription>
+                  </CardHeader>
+                  
+                  <CardContent className="space-y-4">
+                    <div className="flex flex-wrap gap-2">
+                      {yogaClass.benefits.map((benefit, idx) => (
+                        <Badge key={idx} variant="secondary" className="bg-sage-100 text-sage-700 hover:bg-sage-200 transition-colors">
+                          {benefit}
+                        </Badge>
+                      ))}
+                    </div>
+                    
+                    <div className="space-y-2 text-sm text-sage-600">
+                      <div className="flex justify-between">
+                        <span className="font-medium">Horario:</span>
+                        <span>{yogaClass.schedule}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="font-medium">Duración:</span>
+                        <span>{yogaClass.duration}</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            );
+          })}
         </div>
 
         <div className="text-center mt-16">
